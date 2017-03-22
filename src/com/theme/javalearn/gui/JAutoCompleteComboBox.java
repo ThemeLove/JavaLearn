@@ -3,6 +3,8 @@ package com.theme.javalearn.gui;
  * @author:lqs
  * date	  :2017年3月21日
  */
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;  
 import java.awt.event.ItemListener;  
 import java.awt.event.KeyEvent;  
@@ -11,11 +13,22 @@ import java.util.Arrays;
 import java.util.List;  
 import java.util.Vector;  
   
+
+
+
+
+
+
+
+
 import javax.swing.ComboBoxModel;  
 import javax.swing.DefaultComboBoxModel;  
 import javax.swing.JComboBox;  
 import javax.swing.JFrame;  
 import javax.swing.JTextField;  
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
   
 /** 
  * @author SamZheng 带有自动检查功能的CombBox 
@@ -49,6 +62,7 @@ public class JAutoCompleteComboBox extends JComboBox {
   
     private void addCompleter() {  
         setEditable(true);  
+        setSelectedIndex(-1);
         completer = new AutoCompleter(this);  
     }  
   
@@ -80,7 +94,7 @@ public class JAutoCompleteComboBox extends JComboBox {
     public static void main(String[] args) {  
         JFrame frame = new JFrame();  
         Object[] items = new Object[] { "zzz", "zba", "aab", "abc", "aab",  
-                "dfg", "aba", "hpp", "pp", "hlp" };  
+                "dfg", "aba", "hpp", "pp", "hlp","aaaa","abaaa","abcd","abcde" };  
         // 排序内容  
         // java.util.ArrayList list = new  
         // java.util.ArrayList(Arrays.asList(items));  
@@ -113,7 +127,43 @@ class AutoCompleter implements KeyListener, ItemListener {
     public AutoCompleter(JComboBox comboBox) {  
         owner = comboBox;  
         editor = (JTextField) comboBox.getEditor().getEditorComponent();  
-        editor.addKeyListener(this);  
+//        editor.addKeyListener(this);  
+        editor.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				
+				int length = e.getDocument().getLength();
+				// TODO Auto-generated method stub
+				System.out.println("removeUpdate:");
+				System.out.println("length:"+length);
+				int caretPosition = editor.getCaretPosition();
+					String text;
+					//						text = e.getDocument().getText(0, length).trim();
+											text = editor.getText();
+											System.out.println("text:"+text);
+											autoComplete(text, caretPosition);
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println("insertUpdate:");
+				int length = e.getDocument().getLength();
+				System.out.println("length:"+length);
+				int caretPosition = editor.getCaretPosition();
+					String text;
+					//						text = e.getDocument().getText(0, length).trim();
+											text = editor.getText();
+											System.out.println("text:"+text);
+											autoComplete(text, caretPosition);
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				System.out.println("changedUpdate:");
+			}
+		});
         model = comboBox.getModel();  
         owner.addItemListener(this);  
     }  
@@ -126,12 +176,13 @@ class AutoCompleter implements KeyListener, ItemListener {
   
     public void keyReleased(KeyEvent e) {  
         char ch = e.getKeyChar();  
-        if (ch == KeyEvent.CHAR_UNDEFINED || Character.isISOControl(ch)  
-                || ch == KeyEvent.VK_DELETE) {  
+//        || ch == KeyEvent.VK_DELETE  || Character.isISOControl(ch)
+        if (ch == KeyEvent.CHAR_UNDEFINED) {  
             return;  
         }  
   
         int caretPosition = editor.getCaretPosition();  
+        System.out.println("caretPosition:"+caretPosition);
         String str = editor.getText();  
         if (str.length() == 0) {  
             return;  
@@ -149,20 +200,29 @@ class AutoCompleter implements KeyListener, ItemListener {
             model = new DefaultComboBoxModel(opts);  
             owner.setModel(model);  
         }  
-        if (opts.length > 0) {  
+        owner.setSelectedIndex(-1);
+//        owner.showPopup();  
+        return;
+       /* if (opts.length > 0) {  
             // String str = opts[0].toString();  
             if (caretPosition > editor.getText().length())  
                 return;  
             editor.setCaretPosition(caretPosition);  
-            editor.setText(editor.getText().trim().substring(0, caretPosition));  
+//            editor.setText(editor.getText().trim().substring(0, caretPosition));  
             if (owner != null) {  
                 try {  
                     owner.showPopup();  
+                    owner.setSelectedIndex(-1);
+//                    String eidtText = editor.getText().trim().substring(0, caretPosition);
+//                    editor.setText(strf); 
+//                    System.out.println("eidtText:---->"+eidtText);
+                    System.out.println("strf:---->"+strf);
                 } catch (Exception ex) {  
+                	
                     ex.printStackTrace();  
                 }  
             }  
-        }  
+        }  */
     }  
   
     /** 

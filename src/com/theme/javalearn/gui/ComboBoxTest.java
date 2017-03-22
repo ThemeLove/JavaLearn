@@ -1,101 +1,150 @@
 package com.theme.javalearn.gui;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.LayoutManager;
-import java.util.Arrays;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.ComboBoxEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import com.theme.javalearn.base.forechTest;
 
 /**
  * 该类是用来测试JComboBox的类
- * @author:lqs
- * date	  :2017年3月20日
+ * @author:lqs date :2017年3月20日
  */
 public class ComboBoxTest {
-	static MyComboBoxModel<String> myComboBoxModel ;
-	private static String[] contoris=new String[]{"中国","俄罗斯","美国","毛里求斯","日本","韩国"};
-	
+	private static Vector<String> contoris=new Vector<String>();
+	private static JComboBox<String> jComboBox;
+	private static ComboBoxEditor editor;
+	private static JTextField editText;
+
 	public static void main(String[] args) {
+		contoris.add("中");
+		contoris.add("中国");
+		contoris.add("中国人");
+		contoris.add("中国人民");
+		contoris.add("中国人民币");
+		contoris.add("中国人民币汇");
+		contoris.add("中国人民币汇率");
 		JFrame jFrame = new JFrame("ComboBox测试");
-		 myComboBoxModel = new ComboBoxTest().new MyComboBoxModel<String>();
-		JComboBox<String> jComboBox = new JComboBox<>(myComboBoxModel);
-		jComboBox.setLocation(174, 13);
-		jComboBox.setSize(195, 44);
+		DefaultComboBoxModel<String> myComboBoxModel = new DefaultComboBoxModel<String>(contoris);
+		jComboBox = new JComboBox<>(myComboBoxModel);
+		jComboBox.setLocation(80, 13);
+		jComboBox.setSize(289, 44);
 		jComboBox.setEditable(true);
-		jComboBox.configureEditor(jComboBox.getEditor(), "请选择国家");
+		jComboBox.setSelectedIndex(-1);
+		editor = jComboBox.getEditor();
+		jComboBox.setBorder(BorderFactory.createTitledBorder("请选择国家"));
+		editText = (JTextField) editor.getEditorComponent();
+		 jComboBox.configureEditor(editor, "");
 		jFrame.getContentPane().setLayout(null);
 		jFrame.getContentPane().add(jComboBox);
 		jFrame.setSize(500, 500);
 		jFrame.setVisible(true);
-	}
-	
-	
-	public class MyComboBoxModel<String> extends DefaultComboBoxModel<String>{
-		private static final long serialVersionUID = 1L;
-		public MyComboBoxModel(){
-			
-			for (java.lang.String country : Arrays.asList(contoris)) {
-				addElement((String) country);
+		jComboBox.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				
+				int stateChange = e.getStateChange();
+				if (stateChange==ItemEvent.SELECTED) {
+					java.lang.String item = e.getItem().toString();
+					System.out.println("选择的Item:" + item);
+				}
 			}
-		}
-		@Override
-		public void setSelectedItem(Object anObject) {
-			System.out.println("setSelectedItem------->" +anObject.toString());
-			super.setSelectedItem(anObject);
-			
-		}
-		@Override
-		public Object getSelectedItem() {
-			System.out.println("getSelectedItem------->" +super.getSelectedItem().toString());
-			return super.getSelectedItem();
-		}
-		@Override
-		public int getSize() {
-			System.out.println("getSize------->" +super.getSize());
-			return super.getSize();
-		}
-		@Override
-		public String getElementAt(int index) {
-			System.out.println("getElementAt------->" +index);
-			return super.getElementAt(index);
-		}
-		@Override
-		public int getIndexOf(Object anObject) {
-			System.out.println("getIndexOf------->" +super.getIndexOf(anObject));
-			return super.getIndexOf(anObject);
-		}
-		@Override
-		public void addElement(String anObject) {
-			System.out.println("addElement------->" +anObject.toString());
-			super.addElement(anObject);
-		}
-		@Override
-		public void insertElementAt(String anObject, int index) {
-			System.out.println("insertElementAt------->" +anObject.toString()+ "index:"+ index);
-			super.insertElementAt(anObject, index);
-		}
-		@Override
-		public void removeElementAt(int index) {
-			// TODO Auto-generated method stub
-			super.removeElementAt(index);
-		}
-		@Override
-		public void removeElement(Object anObject) {
-			// TODO Auto-generated method stub
-			super.removeElement(anObject);
-		}
-		@Override
-		public void removeAllElements() {
-			// TODO Auto-generated method stub
-			super.removeAllElements();
-		}
-		
-		
+		});
+		editText.addKeyListener(new KeyAdapter() {
+
+			// 当键盘弹起的时候,监听删除键弹起的时候
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyChar() == KeyEvent.VK_DELETE|| e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
+					System.out.println("keyReleased");
+					String text = editText.getText().trim();
+					editText.setText(text);
+					editText.setCaretPosition(text.length());
+					
+					Vector<String> tempItems =new Vector<>();
+					if (text.isEmpty()) {
+						System.out.println("keyReleased		editText:"+"empty");
+						tempItems = contoris;
+					} else {
+						System.out.println("keyReleased		editText:"+text);
+						tempItems = updateItems(text);
+					}
+					DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
+					jComboBox.setModel(myComboBoxModel2);
+					
+//					jComboBox.setSelectedIndex(-1);
+					jComboBox.showPopup();
+				}
+			}
+						public  Vector<String> updateItems(String text) {
+							Vector<String> temp = new Vector<String>();
+							for (String country : contoris) {
+								if (country.contains(text)) {
+									temp.add(country);
+								}
+							}
+							return temp;
+						};
+		});
+
+		editText.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				java.lang.String text = editText.getText();
+				System.out.println("removeUpdate：" + text);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				java.lang.String text = editText.getText();
+				System.out.println("insertUpdate：" + text);
+				
+				editText.setText(text);
+				editText.setCaretPosition(text.length());
+				
+				
+				Vector<String> tempItems = new Vector<>();
+				if (text.isEmpty()) {
+					System.out.println("insertUpdate  editText:"+"empty");
+					tempItems = contoris;
+				} else {
+					System.out.println("insertUpdate  editText:"+text);
+					tempItems = updateItems(text);
+				}
+				DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
+				jComboBox.setModel(myComboBoxModel2);
+//				jComboBox.setSelectedIndex(-1);
+				jComboBox.showPopup();
+			}
+			public  Vector<String> updateItems(String text) {
+				Vector<String> temp = new Vector<String>();
+				for (String country : contoris) {
+					if (country.contains(text)) {
+						temp.add(country);
+					}
+				}
+				return temp;
+			};
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				java.lang.String text = editText.getText();
+				System.out.println("changedUpdate：" + text);
+			}
+		});
 	}
+
+
 }
