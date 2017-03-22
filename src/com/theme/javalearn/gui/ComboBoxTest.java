@@ -70,8 +70,7 @@ public class ComboBoxTest {
 				if (e.getKeyChar() == KeyEvent.VK_DELETE|| e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
 					System.out.println("keyReleased");
 					String text = editText.getText().trim();
-					editText.setText(text);
-					editText.setCaretPosition(text.length());
+					
 					
 					Vector<String> tempItems =new Vector<>();
 					if (text.isEmpty()) {
@@ -81,11 +80,18 @@ public class ComboBoxTest {
 						System.out.println("keyReleased		editText:"+text);
 						tempItems = updateItems(text);
 					}
-					DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
-					jComboBox.setModel(myComboBoxModel2);
+					if (tempItems.size()==0) {
+						jComboBox.hidePopup();
+					}else{
+						DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
+						jComboBox.setModel(myComboBoxModel2);
+						
+					jComboBox.setSelectedIndex(-1);
+						jComboBox.showPopup();
+					}
 					
-//					jComboBox.setSelectedIndex(-1);
-					jComboBox.showPopup();
+					editText.setText(text);
+					editText.setCaretPosition(text.length());
 				}
 			}
 						public  Vector<String> updateItems(String text) {
@@ -109,11 +115,10 @@ public class ComboBoxTest {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				java.lang.String text = editText.getText();
+				java.lang.String text = editText.getText().trim();
 				System.out.println("insertUpdate：" + text);
 				
-				editText.setText(text);
-				editText.setCaretPosition(text.length());
+				
 				
 				
 				Vector<String> tempItems = new Vector<>();
@@ -124,10 +129,18 @@ public class ComboBoxTest {
 					System.out.println("insertUpdate  editText:"+text);
 					tempItems = updateItems(text);
 				}
-				DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
-				jComboBox.setModel(myComboBoxModel2);
+				System.out.println(tempItems.toString());
+				if (tempItems.size()==0) {
+					jComboBox.hidePopup();
+				}else{
+					DefaultComboBoxModel<String> myComboBoxModel2 = new DefaultComboBoxModel<String>(tempItems);
+					jComboBox.setModel(myComboBoxModel2);
+					jComboBox.showPopup();
 //				jComboBox.setSelectedIndex(-1);
-				jComboBox.showPopup();
+				}
+				
+				editText.setText(text);
+				editText.setCaretPosition(text.length());
 			}
 			public  Vector<String> updateItems(String text) {
 				Vector<String> temp = new Vector<String>();
