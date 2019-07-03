@@ -23,4 +23,6 @@ public class SystemPropertyTest {
 		System.out.println("当前项目目录----->"+System.getProperty("user.dir"));
 		System.out.println("当前类的字节码目录----->"+SystemPropertyTest.class.getResource("."));
 	}
+	
+	
 }

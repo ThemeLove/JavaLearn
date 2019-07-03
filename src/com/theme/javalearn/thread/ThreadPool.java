@@ -1,6 +1,4 @@
 package com.theme.javalearn.thread;
-import java.awt.SystemColor;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;

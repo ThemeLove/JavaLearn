@@ -23,7 +23,7 @@ public class HashTest {
 		userB.score=100;
 //      因为我们重写了HashCode()方法。userB.score=100;会改变hashCode的值，
 //		这时我们在HashMap中放入UserA时和取出UserA时，hashCode不一样，所以这时取出的值为null
-//		所以我们一般将equals和hashCode()方法要同时重写。
+//		所以我们一般将equals和hashCode()方法要同时重写。一般判断是否是相等时，会先判断hashCode()返回是否相等，如果相等在判断equals()是否相等
 		Integer integer2 = hashMap.get(userA);//值为null
 		System.out.println("integer2===="+integer2);
 	}
